@@ -28,6 +28,8 @@ n= int(input())
 
 # maps 초기화
 maps=[[0]*(n) for _ in range(n)]
+# shark_maps 초기화
+shark_mpas=[[0]*(n) for _ in range(n)]
 
 # maps 데이터 입력
 for i in range(n):
@@ -36,30 +38,41 @@ print(maps)
 
 # 처음 아기상어 사이즈 2 초기화
 size=2
+# 시작 좌표 초기화
 sx,sy=0,0
+
+# 마지막 하나 남았을 경우 target 좌표
+target_x=0
+target_y=0
 def check():
     count=0
-    global sx,sy
+    global sx,sy,target_x,target_y
     for i in range(n):
         for j in range(n):
             if maps[i][j] in (1,2,3,4,5,6):
                 count+=1
+                # count가 1일 경우 미리 저장
+                target_x=i
+                target_y=j
             if maps[i][j]==9:
                 sx=i
                 sy=j
+                shark_mpas[sx][sy]=size
     if count==0:
-        return False
-    return True
+        return 0
+    if count==1:
+        return 1
+    return 2
 
 dx=[1,0,-1,0]
 dy=[0,1,0,-1]
 
-def bfs():
-
+def bfs(sx,sy):
+    eat_count=0
     # 시간 초기화
     time=0
 
-    global sx,sy,size
+    global size
 
     queue= deque()
     queue.append((sx,sy))
@@ -67,30 +80,42 @@ def bfs():
     while queue:
         x,y=queue.popleft()
         print(x,y)
-        nx=x+dx[i]
-        ny=y+dy[i]
+        for i in range(4):
+            nx=x+dx[i]
+            ny=y+dy[i]
 
-        if nx<0 or ny<0 or nx>n or ny>n:
-            continue
-        if maps[nx][ny]>size and maps[nx][ny]!=0:
-            continue
-        if maps[nx][ny]<size and maps[nx][ny]!=0:
-            size+=maps[nx][ny]
-            maps[nx][ny]=0
-        # 이외에 사이즈가 같은 경우 아무 일도 없음
+            if nx<0 or ny<0 or nx>=n or ny>=n:
+                continue
+            if maps[nx][ny]>size and maps[nx][ny]!=0:
+                continue
+            if maps[nx][ny]<size and maps[nx][ny]!=0:
+                maps[nx][ny]=0
+                eat_count+=1
+                # size +1
+                if eat_count==size:
+                    eat_count=0
+                    size +=1
+            # 이외에 사이즈가 같은 경우 아무 일도 없음
 
-        time+=1
-        maps[x][y]=0
-        maps[nx][ny]+=size
-        queue.append((nx,ny))
+            time+=1
+            shark_mpas[x][y]=0
+            shark_mpas[nx][ny]=size
+            queue.append((nx,ny))
+    return maps[target_x][target_y]
+        # print("-------------")
+        # for i in range(n):
+        #     print(shark_mpas[i])
 
 
 def solution():
     time=0
-    if check()==False:
+    if check()==0:
         return time
-    else:
-        bfs()
+    elif check()==1:
+        bfs(sx,sy)
+        return time
+    elif check()==2:
+        bfs(sx,sy)
         return time
 
 
@@ -99,7 +124,8 @@ def solution():
 
 print(solution())
 print(maps)
-
+print("------")
+print(shark_mpas)
 # 3
 # 0 0 0
 # 0 0 0
