@@ -177,6 +177,7 @@ def move_s(x,y,tr,tc):
 # 3-6) 움직일 수 있는 칸이 있더라도 루돌프로부터 가까워질 수 없으면 움직이지 않음 (??) // 이전 거리랑 계산해서 더 가까운거 아니면 움직임 X
 # 3-7) 산타는 상하좌우 4칸으로만 이동 가능
 def active_s(idx): # 산타 움직임
+    print("{} active is survive?{}".format(idx, survive[idx]))
     if survive[idx]==True:
         sx,sy=santa[idx]
         maps[sx][sy]=0
@@ -213,6 +214,7 @@ def crush_check_r(x,y,direction):
 
         if nx<1 or ny<1 or nx>n or ny>n:
             survive[maps[x][y]]=False
+            print("탈락",maps[x][y])
             #루돌프 움직임 갱신 / 산타 지우기
             maps[x][y]=99
         else:
@@ -321,7 +323,7 @@ def check_survived():
     print("santa_score",santa_score[1:])
 
 def solution():
-    for i in range(1,2):
+    for i in range(1,3):
         # 루돌프 움직임
         nx,ny,direction_r=active_r(rr,rc)
         print("루돌프 {} 번째 움직임 {}, {} dir {}".format(i,nx,ny,direction_r))
